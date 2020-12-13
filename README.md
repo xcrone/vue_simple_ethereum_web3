@@ -1,5 +1,8 @@
 # simple_ethereum_web3
 
+## Requirement
+Install Google Chrome Metamask extention and create wallet
+
 ## Project setup
 ```
 npm install
