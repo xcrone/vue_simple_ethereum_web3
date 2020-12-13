@@ -1,32 +1,11 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+    <p>Status: {{walletStatus}}</p>
+    <p>Network Id: {{networkId}}</p>
+    <p>Account: {{account}}</p>
+    <p>Balance: {{balance}}</p>
+    <br><br><br>
+    <p>{{output}}</p>
   </div>
 </template>
 
@@ -34,7 +13,78 @@
 export default {
   name: 'HelloWorld',
   props: {
-    msg: String
+    msg: String,
+  },
+  data() {
+    return {
+      walletStatus: "Not Connected",
+      account: "-",
+      balance: "-",
+      networkId: "-",
+      output: "",
+    }
+  },
+  created() {
+    //detect wallet
+    this.walletInstalled();
+  },
+  methods: {
+    async walletInstalled() {
+      const metamaskInstalled = typeof window.web3 !== 'undefined'; //boolean value return
+      if(metamaskInstalled) {
+        //connect to wallet
+        await this.connectWallet();
+        //load data if wallet connected
+        await this.loadData();
+      }else {
+        alert("Please install metamask");
+      }
+    },
+    async connectWallet() {
+      var Web3 = require("web3");
+      if(window.ethereum) {
+        window.web3 = new Web3(window.ethereum);
+        // ask permission to connect
+        try {
+          await window.eth_requestAccounts();
+          this.walletStatus = "Connected";
+        }catch(err) {
+          this.walletStatus = "Failed";
+        }
+      }else if(window.web3) {
+        //create a new connection to blockchain
+        window.web3 = new Web3(window.web3.currentProvider);
+      }
+    },
+    async loadData() {
+      const web3 = window.web3;
+      var account = await web3.eth.getAccounts();
+
+      // get wallet address
+      this.account = account[0];
+
+      // get network ID
+      this.networkId = await web3.eth.net.getId();
+
+      // get wallet balance
+      await web3.eth.getBalance(this.account, (err, bal) => {
+          this.balance = web3.utils.fromWei(bal, 'ether')
+        },
+      );
+
+    },
+    // async getOutput() {
+    //   const web3 = window.web3;
+    //   await web3.eth.getBalance("0x2fb05618Eee3d2d603d23bAdcB87d1013c50fe93", (err, bal) => this.balance = bal);
+    //   console.log(this.output);
+    // }
+    // displayBalance() {
+    //   var Web3 = require("web3");
+    //   var url = "https://eth-mainnet.alchemyapi.io/v2/0ah-SQHe-BzzXbiyVb49VUH5CYVNDYTU";
+    //   var web3 = new Web3(url);
+
+    //   console.log(web3);
+    // }
   }
 }
 </script>
