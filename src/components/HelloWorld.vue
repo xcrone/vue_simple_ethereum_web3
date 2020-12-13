@@ -73,18 +73,6 @@ export default {
       );
 
     },
-    // async getOutput() {
-    //   const web3 = window.web3;
-    //   await web3.eth.getBalance("0x2fb05618Eee3d2d603d23bAdcB87d1013c50fe93", (err, bal) => this.balance = bal);
-    //   console.log(this.output);
-    // }
-    // displayBalance() {
-    //   var Web3 = require("web3");
-    //   var url = "https://eth-mainnet.alchemyapi.io/v2/0ah-SQHe-BzzXbiyVb49VUH5CYVNDYTU";
-    //   var web3 = new Web3(url);
-
-    //   console.log(web3);
-    // }
   }
 }
 </script>
