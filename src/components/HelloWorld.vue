@@ -119,7 +119,10 @@ export default {
       var contract = new web3.eth.Contract(token_abi, token_address);
       console.log(account[0]);
       // write addMinter function
-      await contract.methods.mint(account[0], 100).send({from:account[0]});
+      await contract.methods.mint(account[0], 100).send({
+        from:account[0],
+        gasPrice: '20000000000', // default = 65 Gwei (I think)
+      });
     }
   }
 }
